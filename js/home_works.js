@@ -1,82 +1,110 @@
-// MOVE BLOCK
-const childBlock = document.querySelector('.child_block')
-
-let positionX = 0
-let positionY = 0
+// gmail check
+const gmailInput = document.querySelector('#gmail_input')
+const gmailButtom = document.querySelector('#gmail_button')
+const gmailResault = document.querySelector('#gmail_result')
+const regEXP = /@gmail.com/
+gmailButtom.onclick=() => {
+    if (regEXP.test(gmailInput.value)) {
+        gmailResault.innerHTML  = 'молодец ты поставил @gmail.com ;) ' +
+            'ахахахахах теперь к тебе будет приходить рассылка &#128520;'
+        gmailResault.style.color = 'green'
+    }
+    else {
+        gmailResault.innerHTML  = 'поставь @gmail.com и будет все OK :/'
+        gmailResault.style.color = 'red'
+    }
+}
+// -----------------------------------------------
+const childBlock = document.querySelector('.child_block');
+let positionX = 0;
+let positionY = 0;
+let direction = 'right';
 
 const move = () => {
-    if (positionX < 449 && positionY === 0) {
-        positionX+=2
-        childBlock.style.left = `${positionX}px`
-        setTimeout(move, 10)
-    } else if (positionX >= 449 && positionY < 449) {
-        positionY+=2
-        childBlock.style.top = `${positionY}px`
-        setTimeout(move, 10)
-    } else if (positionX > 0 && positionY > 0) {
-        positionX-=2
-        childBlock.style.left = `${positionX}px`
-        setTimeout(move, 10)
-    } else if (positionX === 0 && positionY > 0) {
-        positionY-=2
-        childBlock.style.top = `${positionY}px`
-        setTimeout(move, 10)
+    if (direction === 'right') {
+        if (positionX < 448) {
+            positionX++;
+            childBlock.style.left = `${positionX}px`;
+        } else {
+            direction = 'down';
+        }
+    } else if (direction === 'down') {
+        if (positionY < 448) {
+            positionY++;
+            childBlock.style.top = `${positionY}px`;
+        } else {
+            direction = 'left';
+        }
+    } else if (direction === 'left') {
+        if (positionX > 0) {
+            positionX--;
+            childBlock.style.left = `${positionX}px`;
+        } else {
+            direction = 'up';
+        }
+    } else if (direction === 'up') {
+        if (positionY > 0) {
+            positionY--;
+            childBlock.style.top = `${positionY}px`;
+        } else {
+            direction = 'right';
+        }
     }
-}
 
-move()
+    setTimeout(move, 1);
+};
 
-// STOPWATCH
-const minutesBlock = document.querySelector('#minutes'),
-    secondsBlock = document.querySelector('#seconds'),
-    mlSecondsBlock = document.querySelector('#ml-seconds'),
-    startButton = document.querySelector('#start'),
-    stopButton = document.querySelector('#stop'),
-    resetButton = document.querySelector('#reset')
+move();
+// _______________________________________________
+const milisek = document.querySelector('#ml-secondsS');
+const secondsS = document.querySelector('#secondsS');
+const minutesS = document.querySelector('#minutesS');
+const start = document.querySelector('#start');
+const stop = document.querySelector('#stop');
+const reset = document.querySelector('#reset');
 
-let interval
-let minutes = 0
-let seconds = 0
-let mlSeconds = 0
+let timerInterval;
+let miliseconds = 0;
+let seconds = 0;
+let minutes = 0;
 
-const startTimer = () => {
-    mlSeconds++
-    mlSeconds <= 99 && (mlSecondsBlock.innerHTML = mlSeconds)
-    mlSeconds === 100 && (mlSecondsBlock.innerHTML = '00')
-
-    mlSecondsBlock.innerHTML = `0${mlSeconds}`
-    mlSeconds > 9 && (mlSecondsBlock.innerHTML = mlSeconds)
-    if (mlSeconds > 99) {
-        seconds++
-        secondsBlock.innerHTML = `0${seconds}`
-        mlSeconds = 0
+const updateMiliseconds = () => {
+    miliseconds++;
+    if (miliseconds >= 100) {
+        miliseconds = 0;
+        seconds++;
+        if (seconds >= 60) {
+            seconds = 0;
+            minutes++;
+            if (minutes >= 60) {
+                minutes = 0;
+            }
+            minutesS.innerHTML = minutes < 10 ? `0${minutes}` : minutes;
+        }
+        secondsS.innerHTML = seconds < 10 ? `0${seconds}` : seconds;
     }
-    seconds > 9 && (secondsBlock.innerHTML = seconds)
-    if (seconds > 59) {
-        minutes++
-        minutesBlock.innerHTML = `0${minutes}`
-        seconds = 0
-        secondsBlock.innerHTML = `0${seconds}`
+    milisek.innerHTML = miliseconds < 10 ? `0${miliseconds}` : miliseconds;
+};
+
+start.addEventListener('click', () => {
+    if (!timerInterval) {
+        timerInterval = setInterval(updateMiliseconds, 10);
     }
-    minutes > 9 && (minutesBlock.innerHTML = minutes)
-}
+});
 
-startButton.onclick = () => {
-    clearInterval(interval)
-    interval = setInterval(startTimer,  10)
-}
+stop.addEventListener('click', () => {
+    clearInterval(timerInterval);
+    timerInterval = null;
+});
 
-stopButton.onclick = () => {
-    clearInterval(interval)
-}
-
-resetButton.onclick = () => {
-    clearInterval(interval)
-    minutes = 0
-    seconds = 0
-    mlSeconds = 0
-    minutesBlock.innerHTML = '00'
-    secondsBlock.innerHTML = '00'
-    mlSecondsBlock.innerHTML = '00'
-}
+reset.addEventListener('click', () => {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    miliseconds = 0;
+    seconds = 0;
+    minutes = 0;
+    milisek.innerHTML = '00';
+    secondsS.innerHTML = '00';
+    minutesS.innerHTML = '00';
+});
 
